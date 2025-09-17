@@ -3,9 +3,9 @@ import { Buffer } from "node:buffer";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
-const CANONICAL_ID = "universal-mcp-server";
-const CANONICAL_DISPLAY = "Universal MCP Server";
-const CANONICAL_CONST = "UNIVERSAL_MCP_SERVER";
+const CANONICAL_ID = "gamma-mcp";
+const CANONICAL_DISPLAY = "Gamma MCP";
+const CANONICAL_CONST = "GAMMA_MCP";
 const DEFAULT_BASE_URL = "https://generations.gamma.app";
 // Zod-based schemas are used by the MCP SDK; local JSON schema types are not required.
 function getBaseUrl() {

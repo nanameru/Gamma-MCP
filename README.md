@@ -1,4 +1,4 @@
-# Universal MCP Server
+# Gamma MCP
 
 The Universal MCP Server exposes tools for the Gamma Generations API and is designed for prompt-first workflows in MCP-compatible clients.
 
@@ -24,11 +24,11 @@ npm run build
 ## Setup: Claude Code (CLI)
 Use this one-line command (replace with your real API key):
 ```bash
-claude mcp add Universal-MCP-Server -s user -e UNIVERSAL_MCP_SERVER_GAMMA_API_KEY="sk-your-real-key" -- npx universal-mcp-server
+claude mcp add Gamma-MCP -s user -e GAMMA_MCP_GAMMA_API_KEY="sk-your-real-key" -- npx gamma-mcp
 ```
 To remove the server from Claude Code:
 ```bash
-claude mcp remove Universal-MCP-Server
+claude mcp remove Gamma-MCP
 ```
 
 ## Setup: Cursor
@@ -36,10 +36,10 @@ Create `.cursor/mcp.json` at your repository root:
 ```json
 {
   "mcpServers": {
-    "universal-mcp-server": {
+    "gamma-mcp": {
       "command": "npx",
-      "args": ["universal-mcp-server"],
-      "env": { "UNIVERSAL_MCP_SERVER_GAMMA_API_KEY": "sk-your-real-key" },
+      "args": ["gamma-mcp"],
+      "env": { "GAMMA_MCP_GAMMA_API_KEY": "sk-your-real-key" },
       "autoStart": true
     }
   }
@@ -51,12 +51,12 @@ Create `.cursor/mcp.json` at your repository root:
 <details>
 <summary>VS Code</summary>
 
-[Install in VS Code](https://insiders.vscode.dev/redirect?url=vscode%3Amcp%2Finstall%3F%7B%22name%22%3A%22universal-mcp-server%22%2C%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22universal-mcp-server%22%5D%7D)  
-[Install in VS Code Insiders](https://insiders.vscode.dev/redirect?url=vscode-insiders%3Amcp%2Finstall%3F%7B%22name%22%3A%22universal-mcp-server%22%2C%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22universal-mcp-server%22%5D%7D)
+[Install in VS Code](https://insiders.vscode.dev/redirect?url=vscode%3Amcp%2Finstall%3F%7B%22name%22%3A%22gamma-mcp%22%2C%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22gamma-mcp%22%5D%7D)  
+[Install in VS Code Insiders](https://insiders.vscode.dev/redirect?url=vscode-insiders%3Amcp%2Finstall%3F%7B%22name%22%3A%22gamma-mcp%22%2C%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22gamma-mcp%22%5D%7D)
 
 Or add via CLI:
 ```bash
-code --add-mcp '{"name":"universal-mcp-server","command":"npx","args":["universal-mcp-server"],"env":{"UNIVERSAL_MCP_SERVER_GAMMA_API_KEY":"sk-your-real-key"}}'
+code --add-mcp '{"name":"gamma-mcp","command":"npx","args":["gamma-mcp"],"env":{"GAMMA_MCP_GAMMA_API_KEY":"sk-your-real-key"}}'
 ```
 </details>
 
@@ -72,8 +72,8 @@ Follow the MCP install guide and use the standard config above:
 
 Add MCP Server with:
 - Command: npx
-- Args: ["universal-mcp-server"]
-- Env: UNIVERSAL_MCP_SERVER_GAMMA_API_KEY=sk-your-real-key
+- Args: ["gamma-mcp"]
+- Env: GAMMA_MCP_GAMMA_API_KEY=sk-your-real-key
 </details>
 
 <details>
@@ -82,7 +82,7 @@ Add MCP Server with:
 Advanced settings → Extensions → Add custom extension:
 - Type: STDIO
 - Command: npx
-- Args: universal-mcp-server
+- Args: gamma-mcp
 - Enabled: true
 </details>
 
@@ -94,11 +94,11 @@ Example `~/.config/opencode/opencode.json`:
 {
   "$schema": "https://opencode.ai/config.json",
   "mcp": {
-    "universal-mcp-server": {
+    "gamma-mcp": {
       "type": "local",
       "command": [
         "npx",
-        "universal-mcp-server"
+        "gamma-mcp"
       ],
       "enabled": true
     }
@@ -121,10 +121,10 @@ Follow Windsurf MCP documentation and use the standard config above:
 </details>
 
 ## Configuration (Env)
-- UNIVERSAL_MCP_SERVER_GAMMA_API_KEY: Your Gamma API key (required)
-- UNIVERSAL_MCP_SERVER_GAMMA_BASE_URL: Base URL override (default: `https://generations.gamma.app`)
+- GAMMA_MCP_GAMMA_API_KEY: Your Gamma API key (required)
+- GAMMA_MCP_GAMMA_BASE_URL: Base URL override (default: `https://generations.gamma.app`)
 - GAMMA_API_KEY / GAMMA_BASE_URL: Legacy fallbacks
-- MCP_NAME: Server name override (default: `universal-mcp-server`)
+- MCP_NAME: Server name override (default: `gamma-mcp`)
 
 ## Available Tools
 - gamma_create_generation
@@ -176,24 +176,24 @@ Follow Windsurf MCP documentation and use the standard config above:
 - MCP Architecture: https://modelcontextprotocol.io/docs/learn/architecture
 
 ## Name Consistency & Troubleshooting
-- Always use CANONICAL_ID (`universal-mcp-server`) for identifiers and configuration keys.
-- Use CANONICAL_DISPLAY (`Universal MCP Server`) only for UI labels or documentation prose.
+- Always use CANONICAL_ID (`gamma-mcp`) for identifiers and configuration keys.
+- Use CANONICAL_DISPLAY (`Gamma MCP`) only for UI labels or documentation prose.
 - Do not mix legacy names once you have added the server to a client registry.
 
 Consistency Matrix:
-- npm package name → `universal-mcp-server`
-- Binary name → `universal-mcp-server`
-- MCP server name (SDK metadata) → `universal-mcp-server`
-- Env default `MCP_NAME` → `universal-mcp-server`
-- Client registry key → `universal-mcp-server`
-- UI label → `Universal MCP Server`
+- npm package name → `gamma-mcp`
+- Binary name → `gamma-mcp`
+- MCP server name (SDK metadata) → `gamma-mcp`
+- Env default `MCP_NAME` → `gamma-mcp`
+- Client registry key → `gamma-mcp`
+- UI label → `Gamma MCP`
 
 Conflict Cleanup:
-- Remove any stale entries such as `"UniversalServer"` and re-register with `"universal-mcp-server"`.
+- Remove any stale entries such as `"UniversalServer"` and re-register with `"gamma-mcp"`.
 - Ensure global `.mcp.json` or client registries only contain the canonical identifier.
 - Cursor: configure keys in the UI; this project intentionally omits `.cursor/mcp.json`.
 
 Example:
-- Correct: `"mcpServers": { "universal-mcp-server": { "command": "npx", "args": ["universal-mcp-server"] } }`
-- Incorrect: `"UniversalServer"` as the key (conflicts with `"universal-mcp-server"`).
+- Correct: `"mcpServers": { "gamma-mcp": { "command": "npx", "args": ["gamma-mcp"] } }`
+- Incorrect: `"UniversalServer"` as the key (conflicts with `"gamma-mcp"`).
 
