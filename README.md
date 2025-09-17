@@ -1,74 +1,179 @@
 # Universal MCP Server
 
-## Features
-- Exposes the full Gamma Generations API as Model Context Protocol tools.
-- Ships as an npm-ready package with a binary named `universal-mcp-server`.
-- Uses Node 18+ native `fetch` with optional `.env` support via `dotenv`.
-- Provides binary-safe asset downloads and JSON schema for every tool input.
-- Designed for local development, CI automation, or MCP client integration.
+The Universal MCP Server exposes tools for the Gamma Generations API and is designed for prompt-first workflows in MCP-compatible clients.
 
-## Requirements
-- Node.js 18 or newer.
-- A Gamma Generations API key with project access (see Gamma docs).
-- Optional: npm or pnpm for installation.
+## Installation
 
-## Install & Run
-1. Install dependencies:
-   ```bash
-   npm install
-   ```
-2. Build the TypeScript sources:
-   ```bash
-   npm run build
-   ```
-3. Provide configuration (for example in `.env`):
-   ```env
-   UNIVERSAL_MCP_SERVER_GAMMA_API_KEY=sk_example
-   UNIVERSAL_MCP_SERVER_GAMMA_BASE_URL=https://generations.gamma.app
-   ```
-4. Run via npx/CLI:
-   ```bash
-   npx universal-mcp-server
-   ```
+### Prerequisites
+- Node.js 18+
+- Set `UNIVERSAL_MCP_SERVER_GAMMA_API_KEY` in your environment
 
-## Client Examples
-- **Cursor / Other MCP-aware IDEs**: Configure a server entry with key `universal-mcp-server` and command `npx universal-mcp-server`.
-- **Direct STDIO**: Start the binary and connect using the MCP handshake over stdin/stdout.
-- **Custom Integrations**: Import the package after publishing and spawn the binary with the necessary environment variables.
+### Get a Gamma API key
+- See Gamma developer docs and request access
+  - Overview: https://developers.gamma.app/docs/how-does-the-generations-api-work
+  - Access: https://developers.gamma.app/docs/get-access
+  - Getting Started: https://developers.gamma.app/docs/getting-started
 
-## Build
-- `npm run build` compiles TypeScript to `build/`.
-- `npm pack --dry-run` previews the published tarball.
-- Include the `build/` directory when packaging or deploying.
+### Build locally
+```bash
+cd /Users/kimurataiyou/gamma-mcp
+npm i
+npm run build
+```
 
-## Publish
-1. Update the version in `package.json`.
-2. Ensure `npm run build` succeeds and outputs the latest artifacts.
-3. Publish:
-   ```bash
-   npm publish --access public
-   ```
-4. Tag the release in git if desired.
+## Setup: Claude Code (CLI)
+Use this one-line command (replace with your real API key):
+```bash
+claude mcp add Universal-MCP-Server -s user -e UNIVERSAL_MCP_SERVER_GAMMA_API_KEY="sk-your-real-key" -- npx universal-mcp-server
+```
+To remove the server from Claude Code:
+```bash
+claude mcp remove Universal-MCP-Server
+```
 
-## Tools
-- `gamma_create_generation`: Create a new Gamma deck from prompt, template, or structured payload.
-- `gamma_get_generation`: Read generation status, metadata, and assets.
-- `gamma_list_generations`: Enumerate recent generations with optional filters.
-- `gamma_get_asset`: Download a binary asset (PDF, image, etc.) associated with a generation.
+## Setup: Cursor
+Create `.cursor/mcp.json` at your repository root:
+```json
+{
+  "mcpServers": {
+    "universal-mcp-server": {
+      "command": "npx",
+      "args": ["universal-mcp-server"],
+      "env": { "UNIVERSAL_MCP_SERVER_GAMMA_API_KEY": "sk-your-real-key" },
+      "autoStart": true
+    }
+  }
+}
+```
 
-Environment variables:
-- `UNIVERSAL_MCP_SERVER_GAMMA_API_KEY` (required): Bearer token for Gamma Generations API.
-- `UNIVERSAL_MCP_SERVER_GAMMA_BASE_URL` (optional): Override the base URL (defaults to `https://generations.gamma.app`).
-- `GAMMA_API_KEY` / `GAMMA_BASE_URL` (optional): Legacy fallbacks if the namespaced variables are not set.
-- `MCP_NAME` (optional): Override the server name exposed to clients (defaults to `universal-mcp-server`).
+## Other Clients and Agents
+
+<details>
+<summary>VS Code</summary>
+
+[Install in VS Code](https://insiders.vscode.dev/redirect?url=vscode%3Amcp%2Finstall%3F%7B%22name%22%3A%22universal-mcp-server%22%2C%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22universal-mcp-server%22%5D%7D)  
+[Install in VS Code Insiders](https://insiders.vscode.dev/redirect?url=vscode-insiders%3Amcp%2Finstall%3F%7B%22name%22%3A%22universal-mcp-server%22%2C%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22universal-mcp-server%22%5D%7D)
+
+Or add via CLI:
+```bash
+code --add-mcp '{"name":"universal-mcp-server","command":"npx","args":["universal-mcp-server"],"env":{"UNIVERSAL_MCP_SERVER_GAMMA_API_KEY":"sk-your-real-key"}}'
+```
+</details>
+
+<details>
+<summary>Claude Desktop</summary>
+
+Follow the MCP install guide and use the standard config above:
+- Guide: https://modelcontextprotocol.io/quickstart/user
+</details>
+
+<details>
+<summary>LM Studio</summary>
+
+Add MCP Server with:
+- Command: npx
+- Args: ["universal-mcp-server"]
+- Env: UNIVERSAL_MCP_SERVER_GAMMA_API_KEY=sk-your-real-key
+</details>
+
+<details>
+<summary>Goose</summary>
+
+Advanced settings → Extensions → Add custom extension:
+- Type: STDIO
+- Command: npx
+- Args: universal-mcp-server
+- Enabled: true
+</details>
+
+<details>
+<summary>opencode</summary>
+
+Example `~/.config/opencode/opencode.json`:
+```json
+{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "universal-mcp-server": {
+      "type": "local",
+      "command": [
+        "npx",
+        "universal-mcp-server"
+      ],
+      "enabled": true
+    }
+  }
+}
+```
+</details>
+
+<details>
+<summary>Qodo Gen</summary>
+
+Open Qodo Gen (VSCode/IntelliJ) → Connect more tools → + Add new MCP → Paste the standard config JSON → Save.
+</details>
+
+<details>
+<summary>Windsurf</summary>
+
+Follow Windsurf MCP documentation and use the standard config above:
+- Docs: https://docs.windsurf.com/windsurf/cascade/mcp
+</details>
+
+## Configuration (Env)
+- UNIVERSAL_MCP_SERVER_GAMMA_API_KEY: Your Gamma API key (required)
+- UNIVERSAL_MCP_SERVER_GAMMA_BASE_URL: Base URL override (default: `https://generations.gamma.app`)
+- GAMMA_API_KEY / GAMMA_BASE_URL: Legacy fallbacks
+- MCP_NAME: Server name override (default: `universal-mcp-server`)
+
+## Available Tools
+- gamma_create_generation
+  - inputs:
+    - prompt?: string
+    - templateId?: string
+    - brandId?: string
+    - format?: string
+    - metadata?: object
+    - callbacks?: object (webhook config)
+    - payload?: object (structured creation payload)
+- gamma_get_generation
+  - inputs:
+    - generationId: string
+    - expand?: boolean
+- gamma_list_generations
+  - inputs:
+    - status?: string (queued|processing|ready|failed)
+    - limit?: number
+    - page?: number
+- gamma_get_asset
+  - inputs:
+    - generationId: string
+    - assetId: string
+
+### Example invocation (MCP tool call)
+```json
+{
+  "name": "gamma_create_generation",
+  "arguments": {
+    "prompt": "Create a 10-slide pitch deck about product-market fit",
+    "format": "presentation"
+  }
+}
+```
+
+## Troubleshooting
+- 401 auth errors: verify `UNIVERSAL_MCP_SERVER_GAMMA_API_KEY`
+- Ensure Node 18+
+- If running via npx locally: `npx universal-mcp-server` works after `npm run build`
+- For local development: you can run `node build/index.js` directly
 
 ## References
 - Gamma Generations API Overview: https://developers.gamma.app/docs/how-does-the-generations-api-work
 - Gamma Access: https://developers.gamma.app/docs/get-access
 - Gamma Getting Started: https://developers.gamma.app/docs/getting-started
-- MCP SDK Docs: https://modelcontextprotocol.io/docs/sdks
+- Model Context Protocol Quickstart: https://modelcontextprotocol.io/quickstart/server
+- MCP SDK Docs: https://modelcontextprotocol.io/docs/sdk
 - MCP Architecture: https://modelcontextprotocol.io/docs/learn/architecture
-- MCP Server Spec: https://modelcontextprotocol.io/specification/2025-06-18/server/index
 
 ## Name Consistency & Troubleshooting
 - Always use CANONICAL_ID (`universal-mcp-server`) for identifiers and configuration keys.
