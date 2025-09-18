@@ -8,7 +8,7 @@ import { z } from "zod";
 const CANONICAL_ID = "gamma-mcp";
 const CANONICAL_DISPLAY = "Gamma MCP";
 const CANONICAL_CONST = "GAMMA_MCP";
-const DEFAULT_BASE_URL = "https://generations.gamma.app";
+const DEFAULT_BASE_URL = "https://public-api.gamma.app";
 
 type GammaRequestOptions = {
   path: string;
@@ -48,7 +48,7 @@ async function callGamma<T>(options: GammaRequestOptions): Promise<T> {
   }
 
   const headers: Record<string, string> = {
-    Authorization: `Bearer ${getApiKey()}`,
+    "X-API-KEY": getApiKey(),
     Accept: "application/json",
   };
 
@@ -106,69 +106,111 @@ mcp.registerTool(
     description:
       "Create a new Gamma deck generation from a prompt, template, or structured payload.",
     inputSchema: {
-      prompt: z.string().describe(
-        "Natural language instructions or prompt used to generate the deck."
+      inputText: z.string().describe(
+        "The text used to generate the Gamma content. Character limit is 1-750,000. It can be a short prompt or lengthy, structured text."
       ).optional(),
-      templateId: z
-        .string()
-        .describe("Optional Gamma template identifier to base the deck on.")
-        .optional(),
-      brandId: z
-        .string()
-        .describe("Optional brand identifier to apply brand styles.")
+      textMode: z
+        .enum(["generate", "condense", "preserve"])
+        .describe("Determines how inputText is modified: generate (default), condense, or preserve.")
         .optional(),
       format: z
+        .enum(["presentation", "document", "social"])
+        .describe("Requested output format: presentation (default), document, or social.")
+        .optional(),
+      themeName: z
         .string()
-        .describe("Requested output format (e.g. presentation, doc).")
+        .describe("Defines the theme for the output (colors, fonts).")
         .optional(),
-      metadata: z
-        .record(z.unknown())
-        .describe("Additional metadata forwarded to the Gamma API.")
+      numCards: z
+        .number()
+        .describe("Number of cards to create if cardSplit is auto. Pro users: 1-50, Ultra users: 1-75.")
         .optional(),
-      callbacks: z
-        .record(z.unknown())
-        .describe("Webhook configuration for async completions as defined by Gamma.")
+      cardSplit: z
+        .enum(["auto", "inputTextBreaks"])
+        .describe("Controls how content is divided into cards: auto (default) or inputTextBreaks.")
         .optional(),
-      payload: z
-        .record(z.unknown())
-        .describe(
-          "When supplying a structured creation payload, pass it via this field instead of prompt."
-        )
+      additionalInstructions: z
+        .string()
+        .describe("Additional specifications for content, layouts, etc. Character limit is 1-500.")
+        .optional(),
+      exportAs: z
+        .enum(["pdf", "pptx"])
+        .describe("Allows direct export of the generated Gamma as pdf or pptx.")
+        .optional(),
+      textOptions: z
+        .object({
+          amount: z.enum(["brief", "medium", "detailed", "extensive"]).optional(),
+          tone: z.string().optional(),
+          audience: z.string().optional(),
+          language: z.string().optional(),
+        })
+        .describe("Text generation options.")
+        .optional(),
+      imageOptions: z
+        .object({
+          source: z.enum(["aiGenerated", "pictographic", "unsplash", "giphy", "webAllImages", "webFreeToUse", "webFreeToUseCommercially", "placeholder", "noImages"]).optional(),
+          model: z.string().optional(),
+          style: z.string().optional(),
+        })
+        .describe("Image generation options.")
+        .optional(),
+      cardOptions: z
+        .object({
+          dimensions: z.string().optional(),
+        })
+        .describe("Card layout options.")
+        .optional(),
+      sharingOptions: z
+        .object({
+          workspaceAccess: z.enum(["noAccess", "view", "comment", "edit", "fullAccess"]).optional(),
+          externalAccess: z.enum(["noAccess", "view", "comment", "edit"]).optional(),
+        })
+        .describe("Sharing access options.")
         .optional(),
     },
   },
   async ({
-    prompt,
-    templateId,
-    brandId,
+    inputText,
+    textMode,
     format,
-    metadata,
-    callbacks,
-    payload,
+    themeName,
+    numCards,
+    cardSplit,
+    additionalInstructions,
+    exportAs,
+    textOptions,
+    imageOptions,
+    cardOptions,
+    sharingOptions,
   }) => {
-    if (!prompt && !payload) {
+    if (!inputText) {
       return {
         isError: true,
         content: [
           {
             type: "text",
-            text: "Either 'prompt' or 'payload' must be provided to create a Gamma generation.",
+            text: "inputText must be provided to create a Gamma generation.",
           },
         ],
       };
     }
 
     const response = await callGamma<Record<string, unknown>>({
-      path: "/v1/generations",
+      path: "/v0.2/generations",
       method: "POST",
       body: {
-        prompt,
-        template_id: templateId,
-        brand_id: brandId,
+        inputText,
+        textMode,
         format,
-        metadata,
-        callbacks,
-        payload,
+        themeName,
+        numCards,
+        cardSplit,
+        additionalInstructions,
+        exportAs,
+        textOptions,
+        imageOptions,
+        cardOptions,
+        sharingOptions,
       },
     });
 
@@ -199,7 +241,7 @@ mcp.registerTool(
   },
   async ({ generationId, expand }) => {
     const response = await callGamma<Record<string, unknown>>({
-      path: `/v1/generations/${encodeURIComponent(generationId)}`,
+      path: `/v0.2/generations/${encodeURIComponent(generationId)}`,
       method: "GET",
       searchParams: {
         expand: expand ? "true" : undefined,
@@ -240,7 +282,7 @@ mcp.registerTool(
   },
   async ({ status, limit, page }) => {
     const response = await callGamma<Record<string, unknown>>({
-      path: "/v1/generations",
+      path: "/v0.2/generations",
       method: "GET",
       searchParams: {
         status,
@@ -278,7 +320,7 @@ mcp.registerTool(
   },
   async ({ generationId, assetId }) => {
     const binary = await callGamma<Buffer>({
-      path: `/v1/generations/${encodeURIComponent(
+      path: `/v0.2/generations/${encodeURIComponent(
         generationId
       )}/assets/${encodeURIComponent(assetId)}`,
       method: "GET",
