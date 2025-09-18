@@ -129,13 +129,30 @@ Follow Windsurf MCP documentation and use the standard config above:
 ## Available Tools
 - gamma_create_generation
   - inputs:
-    - prompt?: string
-    - templateId?: string
-    - brandId?: string
-    - format?: string
-    - metadata?: object
-    - callbacks?: object (webhook config)
-    - payload?: object (structured creation payload)
+    - inputText?: string
+    - textMode?: "generate" | "condense" | "preserve"
+    - format?: "presentation" | "document" | "social"
+    - themeName?: string
+    - numCards?: number
+    - cardSplit?: "auto" | "inputTextBreaks"
+    - additionalInstructions?: string
+    - exportAs?: "pdf" | "pptx"
+    - textOptions?: {
+        amount?: "brief" | "medium" | "detailed" | "extensive",
+        tone?: string,
+        audience?: string,
+        language?: string
+      }
+    - imageOptions?: {
+        source?: "aiGenerated" | "pictographic" | "unsplash" | "giphy" | "webAllImages" | "webFreeToUse" | "webFreeToUseCommercially" | "placeholder" | "noImages",
+        model?: string,
+        style?: string
+      }
+    - cardOptions?: { dimensions?: string }
+    - sharingOptions?: {
+        workspaceAccess?: "noAccess" | "view" | "comment" | "edit" | "fullAccess",
+        externalAccess?: "noAccess" | "view" | "comment" | "edit"
+      }
 - gamma_get_generation
   - inputs:
     - generationId: string
@@ -155,8 +172,15 @@ Follow Windsurf MCP documentation and use the standard config above:
 {
   "name": "gamma_create_generation",
   "arguments": {
-    "prompt": "Create a 10-slide pitch deck about product-market fit",
-    "format": "presentation"
+    "inputText": "AIエージェントについて、技術者向けに12枚のスライドで解説してください。",
+    "format": "presentation",
+    "numCards": 12,
+    "textOptions": {
+      "language": "ja",
+      "tone": "professional",
+      "audience": "技術者・研究者",
+      "amount": "medium"
+    }
   }
 }
 ```

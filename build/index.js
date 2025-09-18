@@ -149,6 +149,27 @@ mcp.registerTool("gamma_create_generation", {
             ],
         };
     }
+    // Normalize language codes to avoid Gamma API validation errors
+    const normalizedTextOptions = (() => {
+        if (!textOptions)
+            return undefined;
+        const clone = { ...textOptions };
+        if (clone.language) {
+            const raw = String(clone.language).trim().toLowerCase();
+            // Common aliases for Japanese → "ja"
+            const japaneseAliases = new Set([
+                "ja",
+                "jp",
+                "ja-jp",
+                "japanese",
+                "日本語",
+            ]);
+            if (japaneseAliases.has(raw)) {
+                clone.language = "ja";
+            }
+        }
+        return clone;
+    })();
     const response = await callGamma({
         path: "/v0.2/generations",
         method: "POST",
@@ -161,7 +182,7 @@ mcp.registerTool("gamma_create_generation", {
             cardSplit,
             additionalInstructions,
             exportAs,
-            textOptions,
+            textOptions: normalizedTextOptions,
             imageOptions,
             cardOptions,
             sharingOptions,
