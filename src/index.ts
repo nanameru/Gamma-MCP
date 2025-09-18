@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 import "dotenv/config";
 import { Buffer } from "node:buffer";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
